@@ -7,7 +7,7 @@ describe('nualamak App', function() {
     page = new NualamakPage();
   });
 
-  it('should display message saying app works', () => {
+  it('should display messageService saying app works', () => {
     page.navigateTo();
     expect(page.getParagraphText()).toEqual('app works!');
   });
