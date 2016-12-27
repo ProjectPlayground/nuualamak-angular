@@ -1,0 +1,52 @@
+<h2>Add a new item to the shop</h2>
+
+<md-list>
+  <md-list-item>
+    <md-input type="text" placeholder="Item Name" [(ngModel)]="itemToAdd.name"></md-input>
+  </md-list-item>
+
+  <md-list-item class="center-input">
+    <label for="category" class="margin-right">Item Category</label>
+    <md-select id="category" [ngModelOptions]="{standalone: true}"
+               [(ngModel)]="itemToAdd.category">
+      <md-option value="theme">Theme</md-option>
+      <md-option value="font">Font</md-option>
+      <md-option value="font_color">Font Color</md-option>
+      <md-option value="emoticon">Emoticon</md-option>
+    </md-select>
+  </md-list-item>
+
+  <md-list-item *ngIf="itemToAdd.category === 'theme'" (click)="inputBackground.click()">
+    <label>Tap to pick a Background Image</label>
+    <img *ngIf="backgroundImage" [src]="backgroundImage">
+    <input type="file" class="hide-element" #inputBackground (change)="pickBackgroundImage($event)">
+  </md-list-item>
+  <md-list-item *ngIf="itemToAdd.category === 'font'">
+    <md-input type="text" formControlName="itemCategoryData" placeholder="Font name"
+               [(ngModel)]="itemToAdd.font_name"></md-input>
+  </md-list-item>
+  <md-list-item *ngIf="itemToAdd.category === 'font_color'">
+    <md-input type="text" formControlName="itemCategoryData" placeholder="Font color"
+               [(ngModel)]="itemToAdd.font_color"></md-input>
+  </md-list-item>
+  <md-list-item *ngIf="itemToAdd.category === 'emoticon'">
+    <md-input type="text" formControlName="itemCategoryData" placeholder="Emoticon"
+               [(ngModel)]="itemToAdd.emoticon"></md-input>
+  </md-list-item>
+
+  <md-list-item>
+    <md-input type="number" placeholder="Number of days the item is available"
+              [(ngModel)]="itemToAdd.daysToExpire"></md-input>
+  </md-list-item>
+
+  <md-list-item>
+    <md-input type="number" placeholder="Item Price" [(ngModel)]="itemToAdd.price"></md-input>
+  </md-list-item>
+</md-list>
+
+
+<md-list-item no-lines class="btns-dialog">
+  <button md-button color="primary" (click)="cancel()">Cancel</button>
+  <button md-button color="primary" (click)="add()">Add Item</button>
+</md-list-item>
+

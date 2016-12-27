@@ -27,6 +27,9 @@ import { ItemService } from './shop/item/item.service';
 import { AddItemDialog } from './shop/add-item/add-item.component';
 import { AddRoomDialog } from './room/add-room/add-room.dialog';
 import { ValidationMessageService } from './shared/validation-message.service';
+import { UserItemsService } from './shared/user/user-items-service';
+import { ConfirmMessageDialog } from './confirm-message/confirm-message.dialog';
+import { LocalStorageService } from 'angular-2-local-storage';
 //import { EmojiModule } from 'angular2-emoji/src/lib/';
 //import { Ng2EmojiPipe } from 'ng2-emoji/ng2-emoji';
 
@@ -42,6 +45,11 @@ const appRoutes: Routes = [
   {path: '**', component: LoginComponent, canActivate: [CanActivateViaAuthGuard]}
 ];
 
+const localStorageServiceConfig = {
+  prefix: 'nuualamak',
+  storageType: 'sessionStorage'
+};
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,12 +63,14 @@ const appRoutes: Routes = [
     SettingComponent,
     ShopComponent,
     AddItemDialog,
-    AddRoomDialog
+    AddRoomDialog,
+    ConfirmMessageDialog
   ],
   entryComponents: [
     ChangePasswordDialog,
     AddItemDialog,
-    AddRoomDialog
+    AddRoomDialog,
+    ConfirmMessageDialog
   ],
   imports: [
     BrowserModule,
@@ -79,9 +89,12 @@ const appRoutes: Routes = [
     RoomService,
     ChatService,
     ItemService,
+    UserItemsService,
     ValidationMessageService,
     CanActivateViaAuthGuard,
-    MdSnackBar
+    MdSnackBar,
+    LocalStorageService,
+    {provide: 'LOCAL_STORAGE_SERVICE_CONFIG', useValue: localStorageServiceConfig}
   ],
   bootstrap: [AppComponent]
 })

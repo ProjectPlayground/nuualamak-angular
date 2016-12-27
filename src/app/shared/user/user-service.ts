@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { LocalStorageService } from 'angular-2-local-storage';
 import 'rxjs/add/operator/map';
 import * as firebase from 'firebase';
-
 import { UserModel } from './user.model';
+import { UserItemsService } from './user-items-service';
 
 @Injectable()
 export class UserService {
@@ -11,8 +12,9 @@ export class UserService {
   private refStorageUsers: firebase.storage.Reference;
 
   private currentUser: UserModel;
+  bonusNuuBits: {got: boolean, value: number, consecutiveLogIn: number};
 
-  constructor() {
+  constructor(public userItemsService: UserItemsService, public localStorage: LocalStorageService) {
     this.refDatabaseUsers = firebase.database().ref('users');
     this.refStorageUsers = firebase.storage().ref('users');
   }
@@ -21,11 +23,20 @@ export class UserService {
     if (this.currentUser) {
       return Promise.resolve(this.currentUser);
     } else {
-      return this.refDatabaseUsers.child(firebase.auth().currentUser.uid).once('value')
-        .then(snapshot => {
-          this.currentUser = snapshot.val();
-          return this.currentUser;
-        });
+      let userUid;
+      if (firebase.auth().currentUser) {
+        userUid = firebase.auth().currentUser.uid;
+      } else {
+        userUid = this.localStorage.get('user');
+      }
+      return new Promise((resolve, reject) =>
+        firebase.auth().onAuthStateChanged(resolve, reject)).then((user: firebase.User) => {
+        return this.refDatabaseUsers.child(user.uid).once('value')
+          .then(snapshot => {
+            this.currentUser = snapshot.val();
+            return this.currentUser;
+          });
+      });
     }
   }
 
@@ -33,8 +44,11 @@ export class UserService {
     return firebase.auth().signInWithEmailAndPassword(userModel.email, password)
       .then(() => {
         return this.getCurrent().then(user => {
+          this.localStorage.set('user', user.uid);
+          this.bonusNuuBits = {got: false, value: 0, consecutiveLogIn: 0};
           this.getNuuBitsBonus(user);
-          return this.updateUserInfo(user);
+          return Promise.all([this.updateUserInfo(user),
+            this.userItemsService.updateItemsBoughtExpiration(user)]);
         });
       });
   }
@@ -54,7 +68,11 @@ export class UserService {
   }
 
   isAuth() {
-    return this.currentUser ? true : false;
+    return this.currentUser ? true : new Promise((resolve, reject) =>
+      firebase.auth().onAuthStateChanged(resolve, reject))
+      .then((user: firebase.User) => {
+        return user;
+      });
   }
 
   logOut() {
@@ -110,21 +128,32 @@ export class UserService {
         case 2:
         case 3:
           user.nuuBits += 1;
+          this.bonusNuuBits.value = 1;
+          this.bonusNuuBits.got = true;
           break;
         case 5:
           user.nuuBits += 3;
+          this.bonusNuuBits.value = 3;
+          this.bonusNuuBits.got = true;
           break;
         case 7:
           user.nuuBits += 8;
+          this.bonusNuuBits.value = 8;
+          this.bonusNuuBits.got = true;
           break;
         case 10:
           user.nuuBits += 25;
+          this.bonusNuuBits.value = 25;
+          this.bonusNuuBits.got = true;
           break;
         default:
           if (user.consecutiveLogIn % 10 === 0) {
             user.nuuBits += 250;
+            this.bonusNuuBits.value = 250;
+            this.bonusNuuBits.got = true;
           }
       }
+      this.bonusNuuBits.consecutiveLogIn = user.consecutiveLogIn;
     } else if (user.lastLoggedDate < today.getTime()) {
       user.consecutiveLogIn = 0;
     }

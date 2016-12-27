@@ -1,0 +1,80 @@
+<md-list class="list-style">
+  <form [formGroup]="loginForm">
+
+    <h2 class="center-text">Welcome to <span class="title">NUU ALAMAK</span></h2>
+    <h4 class="center-text">the best chat app !</h4>
+
+    <p class="center-text">Sign up for free then log in to begin chatting with a lot of people from all over the
+      word.</p>
+
+    <md-list-item class="center-input">
+      <md-input type="email" required
+                [dividerColor]="formErrors.email?'accent':'primary'"
+                placeholder="Email"
+                formControlName="email"
+                [(ngModel)]="userModel.email"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.email">
+      {{ formErrors.email }}
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="!isOnLogin">
+      <md-input type="text" required
+                [dividerColor]="formErrors.username?'accent':'primary'"
+                placeholder="Username"
+                formControlName="username"
+                [(ngModel)]="userModel.username"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.username">
+      {{ formErrors.username }}
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="password" required
+                [dividerColor]="formErrors.password?'accent':'primary'"
+                placeholder="Password"
+                formControlName="password"
+                [(ngModel)]="password"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.password">
+      {{ formErrors.password }}
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="!isOnLogin">
+      <md-input type="password" required
+                [dividerColor]="formErrors.confirmPassword?'accent':'primary'"
+                placeholder="Confirm Password"
+                formControlName="confirmPassword"
+                [(ngModel)]="confirmPassword"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.confirmPassword">
+      {{ formErrors.confirmPassword }}
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="isOnLogin">
+      <button md-raised-button color="primary" [disabled]="loginForm.controls['email'].invalid || loginForm.controls['password'].invalid"
+              (tap)="loginForm.controls['email'].valid && loginForm.controls['password'].valid && login()">Login
+      </button>
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="isOnLogin">
+      <button md-raised-button color="warn" clear (tap)="resetPasswork()">Forgot password</button>
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="!isOnLogin">
+      <button md-raised-button color="primary" [disabled]="!loginForm.valid"
+              (tap)="loginForm.valid && signUp()">Sign up
+      </button>
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="isOnLogin">
+      <button md-button color="primary" (tap)="signUp()">Sign up</button>
+    </md-list-item>
+
+    <md-list-item class="center-input" *ngIf="!isOnLogin">
+      <button md-button color="primary" color="warn" (tap)="login()">Back to Login</button>
+    </md-list-item>
+
+  </form>
+</md-list>
+

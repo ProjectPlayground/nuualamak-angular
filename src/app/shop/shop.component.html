@@ -1,0 +1,38 @@
+<p class="center-text">Here you can buy items for more customization.</p>
+
+<p class="center-text" *ngIf="!firstLoad && items?.length === 0">
+  No item available, please contact admin for more info.
+</p>
+
+<md-list>
+  <md-list-item class="list-style" *ngFor="let item of items">
+    <h3 md-line>{{item.name}}</h3>
+    <p md-line>{{item.price}}</p>
+
+    <div style="min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;">
+      <button md-icon-button *ngIf="!isItemBought(item)" (click)="buyItem(item)">
+        <md-icon><i class="material-icons blue-color">add_shopping_cart</i></md-icon>
+      </button>
+
+      <button md-icon-button *ngIf="isItemBought(item) && !isItemActive(item)" (click)="activateItem(item)">
+        <md-icon><i class="material-icons grey_color">gavel</i></md-icon>
+      </button>
+
+      <div *ngIf="isItemActive(item) && !isItemInactive(item)">
+        <md-icon><i class="material-icons green-color">offline_pin</i></md-icon>
+      </div>
+
+      {{getActivationDate(item) | date}}
+    </div>
+
+  </md-list-item>
+</md-list>
+
+<div class="corner-bottom-right">
+  <button md-fab color="primary" *ngIf="currentUser?.isAdmin" (tap)="addItem()">
+    <md-icon>add</md-icon>
+  </button>
+</div>

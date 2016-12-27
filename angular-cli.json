@@ -55,5 +55,8 @@
       "pipe": true,
       "service": true
     }
-  }
+  },
+  "vendorNpmFiles": [
+    "angular-2-local-storage/**/*.js"
+  ]
 }

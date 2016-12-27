@@ -1,0 +1,51 @@
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-style {
+  overflow: auto;
+}
+
+/*Style the messages*/
+.chat-msg {
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 0px;
+}
+
+.chat-msg >>> .md-list-item {
+  flex-direction: column;
+  height: inherit;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.chat-content {
+  /*display: flex;*/
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+.userMsg {
+  background: #d6d8fc;
+}
+
+.othersMsg {
+  background: #f0f0f0;
+}
+
+ /*Style the textarea*/
+.no-resize >>> textarea {
+  resize: none;
+}
+
+.bold {
+  font-weight: bold;
+}
+

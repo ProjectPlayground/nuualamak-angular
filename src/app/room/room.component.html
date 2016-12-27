@@ -1,0 +1,17 @@
+<p class="center-text" *ngIf="!firstLoad && rooms?.length === 0">Create a room and start chatting.</p>
+
+<md-list class="list-style">
+  <nav>
+    <md-list-item>
+      <button md-line md-button *ngFor="let room of rooms" [routerLink]="[room, 'chat']">
+        {{room}}
+      </button>
+    </md-list-item>
+  </nav>
+</md-list>
+
+<div class="corner-bottom-right margin-right">
+  <button md-fab color="primary" (tap)="addRoom()">
+    <md-icon>add</md-icon>
+  </button>
+</div>

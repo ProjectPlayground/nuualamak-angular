@@ -1,0 +1,81 @@
+<md-list>
+  <form [formGroup]="profileForm">
+    <md-list-item class="center-input">
+      <img class="margin-right style-avatar" *ngIf="!isLoadingAvatar"
+           (click)="inputAvatar.click()" [src]="userAvatar">
+      <md-progress-circle mode="indeterminate" color="primary" class="loading-size"
+                          *ngIf="isLoadingAvatar"></md-progress-circle>
+      <div (click)="inputAvatar.click()">Tap to change your avatar</div>
+      <input type="file" class="hide-element" #inputAvatar (change)="changeAvatar($event)">
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="text"
+                [dividerColor]="formErrors.username?'accent':'primary'"
+                formControlName="username"
+                [(ngModel)]="user.username">
+        <span md-prefix class="margin-right">Username :</span>
+      </md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.username">
+      {{ formErrors.username }}
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="email"
+                [dividerColor]="formErrors.email?'accent':'primary'"
+                formControlName="email"
+                [(ngModel)]="user.email">
+        <span md-prefix class="margin-right">Email :</span>
+      </md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.email">
+      {{ formErrors.email }}
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="password" disabled="true" value="******" (click)="changePassword()">
+        <span md-prefix class="margin-right">Password :</span>
+      </md-input>
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <label for="gender" class="margin-right">Gender :</label>
+      <md-select id="gender" [ngModelOptions]="{standalone: true}"
+                 [(ngModel)]="user.gender">
+        <md-option value="f">Female</md-option>
+        <md-option value="m">Male</md-option>
+      </md-select>
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="number" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.age">
+        <span md-prefix class="margin-right">Age :</span>
+      </md-input>
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.country">
+        <span md-prefix class="margin-right">Country :</span>
+      </md-input>
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.location">
+        <span md-prefix class="margin-right">Location :</span>
+      </md-input>
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <md-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.hobbies">
+        <span md-prefix class="margin-right">Hobbies :</span>
+      </md-input>
+    </md-list-item>
+
+    <md-list-item class="center-input">
+      <button md-raised-button color="primary" [disabled]="!profileForm.valid"
+              (tap)="profileForm.valid && save()">Save changes</button>
+    </md-list-item>
+  </form>
+
+</md-list>

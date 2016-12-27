@@ -1,0 +1,25 @@
+<h2>Add a new room to chat</h2>
+
+<md-list>
+  <form [formGroup]="addRoomForm">
+    <md-list-item>
+      <md-input type="text"
+                [dividerColor]="formErrors.roomName?'accent':'primary'"
+                placeholder="Room Name"
+                formControlName="roomName"
+                [(ngModel)]="newRoomName"></md-input>
+    </md-list-item>
+    <md-list-item class="alert alert-danger" *ngIf="formErrors.roomName">
+      {{ formErrors.roomName }}
+    </md-list-item>
+  </form>
+</md-list>
+
+
+<md-list-item no-lines class="btns-dialog">
+  <button md-button color="primary" (click)="cancel()">Cancel</button>
+  <button md-button color="primary" [disabled]="!addRoomForm.valid"
+          (click)="addRoomForm.valid && add()">Add Room
+  </button>
+</md-list-item>
+

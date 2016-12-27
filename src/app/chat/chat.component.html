@@ -1,0 +1,30 @@
+<md-list class="list-style" angular2-auto-scroll>
+  <md-list-item *ngIf="!firstLoad && messageList?.length === 0">
+    Send a message, and it would be the first one in this room.
+  </md-list-item>
+  <md-list-item class="chat-msg" *ngFor="let msg of messageList"
+                [ngClass]="{userMsg: msg.user.uid===user.uid, othersMsg: msg.user.uid!==user.uid}">
+      <span class="chat-header">
+        <div>{{msg.user.username}}:</div>
+        <div *ngIf="getFarCodeTimestamp(msg) === 0">last {{getTimePassed(msg) | date:'mm'}} minutes</div>
+        <div *ngIf="getFarCodeTimestamp(msg) === 1">{{msg.timestamp | date:'HH:mm:ss'}}</div>
+        <div *ngIf="getFarCodeTimestamp(msg) === 2">{{msg.timestamp | date}}</div>
+      </span>
+    <div class="chat-content" #chatContent [innerHTML]="msg.content | emojis"></div>
+  </md-list-item>
+</md-list>
+
+<footer>
+  <md-toolbar>
+    <emoji-input #emoji class="full-width margin-right" fullWidth [popupAnchor]="'bottom'"
+                 [marginTopEmojiOpener]="'28px'" [(model)]="typedMsg">
+      <md-textarea #textarea class="no-resize" floatingPlaceholder="false"
+                   (blur)="emoji.saveCursorPosition(textarea)"
+                   placeholder="Type your text Here" [(ngModel)]="typedMsg"></md-textarea>
+    </emoji-input>
+
+    <button md-icon-button [disabled]="typedMsg.trim() === ''" (click)="sendMsg()">
+      <md-icon><i class="material-icons">send</i></md-icon>
+    </button>
+  </md-toolbar>
+</footer>

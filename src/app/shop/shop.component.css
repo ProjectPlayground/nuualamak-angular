@@ -1,0 +1,27 @@
+
+.list-style {
+  justify-content: center;
+  display: flex;
+  margin-bottom: 20px;
+}
+
+md-list-item >>> .md-list-text {
+  min-width: 250px;
+}
+
+md-list-item >>> .md-list-item {
+  border: 3px solid #b0b0b0;
+  border-radius: 20px;
+}
+
+.green-color {
+  color: #22bfbf;
+}
+
+.grey_color {
+  color: #67798a;
+}
+
+.blue-color {
+  color: #003366;
+}
