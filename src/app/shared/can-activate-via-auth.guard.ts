@@ -9,12 +9,15 @@ export class CanActivateViaAuthGuard implements CanActivate {
   }
 
   canActivate() {
-    if (this.userService.isAuth()) {
-      return true;
-    } else {
-      this.router.navigate(['login']);
-      return false;
-    }
+    return this.userService.isAuth()
+      .then(isAuth => {
+        if (isAuth) {
+          return true;
+        } else {
+          this.router.navigate(['login']);
+          return false;
+        }
+      });
   }
 
 }

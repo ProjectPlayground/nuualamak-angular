@@ -11,8 +11,8 @@
 /*Style the messages*/
 .chat-msg {
   border-radius: 10px;
-  padding: 10px;
-  margin: 10px 0px;
+  padding: 0px;
+  margin: 0px;
 }
 
 .chat-msg >>> .md-list-item {
@@ -27,9 +27,9 @@
 }
 
 .chat-content {
-  /*display: flex;*/
   white-space: pre-wrap;
   width: 100%;
+  line-height: 1;
 }
 
 .userMsg {
@@ -49,3 +49,18 @@
   font-weight: bold;
 }
 
+/*Style the chat background*/
+.chat-background {
+  opacity: 0.5;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: -1;
+  max-width: 90%;
+  max-height: 90%;
+}
+.center-background {
+  display: flex;
+  justify-content: center;
+}

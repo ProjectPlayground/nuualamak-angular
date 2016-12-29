@@ -9,12 +9,9 @@
     <h3 md-line>{{item.name}}</h3>
     <p md-line>{{item.price}}</p>
 
-    <div style="min-width: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;">
+    <div class="btn-shop">
       <button md-icon-button *ngIf="!isItemBought(item)" (click)="buyItem(item)">
-        <md-icon><i class="material-icons blue-color">add_shopping_cart</i></md-icon>
+        <md-icon><i class="material-icons violet-color">add_shopping_cart</i></md-icon>
       </button>
 
       <button md-icon-button *ngIf="isItemBought(item) && !isItemActive(item)" (click)="activateItem(item)">
@@ -25,7 +22,9 @@
         <md-icon><i class="material-icons green-color">offline_pin</i></md-icon>
       </div>
 
-      {{getActivationDate(item) | date}}
+      <div class="date-font">
+        {{getActivationDate(item) | date}}
+      </div>
     </div>
 
   </md-list-item>

@@ -18,7 +18,7 @@
 
   <md-list-item *ngIf="itemToAdd.category === 'theme'" (click)="inputBackground.click()">
     <label>Tap to pick a Background Image</label>
-    <img *ngIf="backgroundImage" [src]="backgroundImage">
+    <img class="background-preview-size" *ngIf="backgroundImage" [src]="backgroundImage">
     <input type="file" class="hide-element" #inputBackground (change)="pickBackgroundImage($event)">
   </md-list-item>
   <md-list-item *ngIf="itemToAdd.category === 'font'">

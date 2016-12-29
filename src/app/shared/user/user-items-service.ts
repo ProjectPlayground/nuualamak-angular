@@ -20,10 +20,10 @@ export class UserItemsService {
       .then((itemsRaw) => {
         let items: (Array<ItemBoughtModel>) = itemsRaw.val() ? itemsRaw.val() : [];
         return this.refItemsBought.child(user.uid).once('value')
-          .then(itemsBoughtRaw => {
-
-            let itemsBought: (Array<ItemBoughtModel>) = itemsBoughtRaw.val() ?
-              Object.keys(itemsBoughtRaw.val()).map(index => itemsBoughtRaw.val()[index]) : [];
+          .then(itemsBoughtData => {
+            let itemsBoughtRaw = itemsBoughtData.val();
+            let itemsBought: (Array<ItemBoughtModel>) = itemsBoughtRaw ?
+              Object.keys(itemsBoughtRaw).map(index => itemsBoughtRaw[index]) : [];
 
             let itemsExpired = {};
             itemsBought.map((itemBought: ItemBoughtModel) => {

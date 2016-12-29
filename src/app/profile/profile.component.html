@@ -2,18 +2,19 @@
   <form [formGroup]="profileForm">
     <md-list-item class="center-input">
       <img class="margin-right style-avatar" *ngIf="!isLoadingAvatar"
-           (click)="inputAvatar.click()" [src]="userAvatar">
+           (click)="editMode && inputAvatar.click()" [src]="userAvatar">
       <md-progress-circle mode="indeterminate" color="primary" class="loading-size"
                           *ngIf="isLoadingAvatar"></md-progress-circle>
-      <div (click)="inputAvatar.click()">Tap to change your avatar</div>
+      <div (click)="editMode && inputAvatar.click()">Tap to change your avatar</div>
       <input type="file" class="hide-element" #inputAvatar (change)="changeAvatar($event)">
     </md-list-item>
 
     <md-list-item class="center-input">
       <md-input type="text"
+                [disabled]="!editMode"
                 [dividerColor]="formErrors.username?'accent':'primary'"
                 formControlName="username"
-                [(ngModel)]="user.username">
+                value="{{user.username}}">
         <span md-prefix class="margin-right">Username :</span>
       </md-input>
     </md-list-item>
@@ -23,9 +24,10 @@
 
     <md-list-item class="center-input">
       <md-input type="email"
+                [disabled]="!editMode"
                 [dividerColor]="formErrors.email?'accent':'primary'"
                 formControlName="email"
-                [(ngModel)]="user.email">
+                value="{{user.email}}">
         <span md-prefix class="margin-right">Email :</span>
       </md-input>
     </md-list-item>
@@ -34,48 +36,85 @@
     </md-list-item>
 
     <md-list-item class="center-input">
-      <md-input type="password" disabled="true" value="******" (click)="changePassword()">
+      <md-input type="password" disabled="true" value="******" (click)="editMode && changePassword()">
         <span md-prefix class="margin-right">Password :</span>
       </md-input>
     </md-list-item>
 
     <md-list-item class="center-input">
       <label for="gender" class="margin-right">Gender :</label>
-      <md-select id="gender" [ngModelOptions]="{standalone: true}"
-                 [(ngModel)]="user.gender">
+      <md-select id="gender"
+                 [disabled]="!editMode"
+                 [ngModelOptions]="{standalone: true}"
+                 [(ngModel)]="userGender">
         <md-option value="f">Female</md-option>
         <md-option value="m">Male</md-option>
       </md-select>
     </md-list-item>
 
     <md-list-item class="center-input">
-      <md-input type="number" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.age">
+      <md-input type="number"
+                [disabled]="!editMode"
+                formControlName="age"
+                value="{{user.age}}">
         <span md-prefix class="margin-right">Age :</span>
       </md-input>
     </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.age">
+      {{ formErrors.age }}
+    </md-list-item>
 
     <md-list-item class="center-input">
-      <md-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.country">
+      <md-input type="text"
+                [disabled]="!editMode"
+                formControlName="country"
+                value="{{user.country}}">
         <span md-prefix class="margin-right">Country :</span>
       </md-input>
     </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.country">
+      {{ formErrors.country }}
+    </md-list-item>
 
     <md-list-item class="center-input">
-      <md-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.location">
+      <md-input type="text"
+                [disabled]="!editMode"
+                formControlName="location"
+                value="{{user.location}}">
         <span md-prefix class="margin-right">Location :</span>
       </md-input>
     </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.location">
+      {{ formErrors.location }}
+    </md-list-item>
 
     <md-list-item class="center-input">
-      <md-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.hobbies">
+      <md-input type="text"
+                [disabled]="!editMode"
+                formControlName="hobbies"
+                value="{{user.hobbies}}">
         <span md-prefix class="margin-right">Hobbies :</span>
       </md-input>
     </md-list-item>
-
-    <md-list-item class="center-input">
-      <button md-raised-button color="primary" [disabled]="!profileForm.valid"
-              (tap)="profileForm.valid && save()">Save changes</button>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.hobbies">
+      {{ formErrors.hobbies }}
     </md-list-item>
+
+    <md-list-item class="center-input margin20">
+      <button md-button *ngIf="!editMode" (click)="editItems(true)">
+        <md-icon><i class="material-icons">mode_edit</i></md-icon> Edit Profile
+      </button>
+
+      <button md-raised-button color="primary" class="margin20"
+              [disabled]="!profileForm.valid" *ngIf="editMode"
+              (click)="profileForm.valid && save()">Save changes
+      </button>
+
+      <button md-raised-button color="primary" class="margin20"
+              *ngIf="editMode" (click)="editItems(false)">Cancel changes
+      </button>
+    </md-list-item>
+
   </form>
 
 </md-list>

@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChildren, ElementRef, QueryList, Renderer } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+import { MdSnackBar, MdSnackBarConfig } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ToolbarService } from '../shared/toolbar.service';
 import { LoadingService } from '../shared/loading.service';
-import { MdSnackBar, MdSnackBarConfig } from '@angular/material';
 import { UserModel } from '../shared/user/user.model';
 import { ChatMessage } from './chat-message';
 import { UserService } from '../shared/user/user-service';
@@ -15,24 +16,27 @@ import { ItemService } from '../shop/item/item.service';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
 
   private snackBarConfig: MdSnackBarConfig;
 
   currentRoom: string;
   typedMsg: string;
-  messageList: Array<ChatMessage>;
-  isPaused = false;
-  firstLoad = true;
   user: UserModel;
+  messageList: Array<ChatMessage>;
   itemsBought: Array<ItemModel>;
 
-  @ViewChildren('chatContent') chatContentList: QueryList<ElementRef>;
+  fontName = 'inherit';
+  fontColor = 'black';
+  backgroundImage = '';
+  isBold = false;
+  isPaused = false;
+  firstLoad = true;
 
   constructor(public route: ActivatedRoute, public toolbarService: ToolbarService,
               public loadingService: LoadingService, private userService: UserService,
               public chatService: ChatService, private itemService: ItemService,
-              public renderer: Renderer, public snackBar: MdSnackBar) {
+              public snackBar: MdSnackBar, private sanitizer: DomSanitizer) {
 
     this.itemsBought = new Array<ItemModel>();
     this.typedMsg = '';
@@ -57,40 +61,21 @@ export class ChatComponent implements OnInit {
         this.itemService .getActiveItemsBought(this.user)
           .then((itemsBought: Array<ItemModel>) => {
             this.itemsBought = itemsBought;
-            itemsBought.map((itemBought: ItemModel) => {
-              switch (itemBought.category) {
-                case 'background_image':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementStyle(chatContent.nativeElement, 'background-image', itemBought.background_image));
-                  break;
-                case 'font':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementStyle(chatContent.nativeElement, 'font-family', itemBought.font_name));
-                  break;
-                case 'font_color':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementStyle(chatContent.nativeElement, 'color', itemBought.font_color));
-                  break;
-                case 'emoticon':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementClass(chatContent.nativeElement, 'bold', true));
-                  break;
-                case 'bold':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementClass(chatContent.nativeElement, 'bold', true));
-                  break;
-
-              }
-            });
+            this.applyItemsStyles(itemsBought);
           })
           .catch(err => console.log(err));
       });
+  }
+
+  ngOnDestroy() {
+    this.unSubscribeToRoom();
   }
 
   sendMsg() {
     this.chatService.send(this.currentRoom, this.typedMsg.trim())
       .then(() => this.typedMsg = '')
       .catch(err => {
+        console.error(err);
         this.snackBar.open('Fail sending rooms messages', '', this.snackBarConfig);
       });
   }
@@ -99,7 +84,7 @@ export class ChatComponent implements OnInit {
     if (this.isPaused) {
       this.subscribeToRoom();
     } else {
-      this.chatService.getLastsEvent(this.currentRoom).off();
+      this.unSubscribeToRoom();
     }
     this.isPaused = !this.isPaused;
   }
@@ -120,6 +105,29 @@ export class ChatComponent implements OnInit {
     return new Date().getTime() - msg.timestamp
   }
 
+  private applyItemsStyles(itemsBought: Array<ItemModel>) {
+    itemsBought.map((itemBought: ItemModel) => {
+      switch (itemBought.category) {
+        case 'theme':
+          this.backgroundImage = itemBought.background_image;
+          break;
+        case 'font':
+          this.fontName = itemBought.font_name;
+          break;
+        case 'font_color':
+          this.fontColor = itemBought.font_color;
+          break;
+        case 'emoticon':
+          //TODO change emojis list
+          break;
+        case 'bold':
+          this.isBold = true;
+          break;
+
+      }
+    });
+  }
+
   private subscribeToRoom() {
     this.chatService.getLastsEvent(this.currentRoom).on('value', (snapshot) => {
       let chatMessage = snapshot.val();
@@ -131,4 +139,7 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  private unSubscribeToRoom() {
+    this.chatService.getLastsEvent(this.currentRoom).off();
+  }
 }

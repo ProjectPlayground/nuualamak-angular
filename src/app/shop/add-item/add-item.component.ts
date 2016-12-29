@@ -25,7 +25,6 @@ export class AddItemDialog implements OnInit {
 
     this.addItemForm = formBuilder.group({
       itemName: ['', Validators.required],
-      //TODO split itemCategoryData on real categories
       itemCategoryData: ['', Validators.required],
       daysToExpire: ['', Validators.required],
       itemPrice: ['', Validators.required]
@@ -44,6 +43,7 @@ export class AddItemDialog implements OnInit {
   }
 
   add() {
+    this.itemToAdd.background_image = this.backgroundImage;
     this.dialogRef.close(this.itemToAdd);
   }
 

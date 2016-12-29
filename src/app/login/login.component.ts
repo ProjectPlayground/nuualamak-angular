@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import * as firebase from 'firebase';
+import { MdSnackBar, MdSnackBarConfig } from '@angular/material';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { UserModel } from '../shared/user/user.model';
 import { UserService } from '../shared/user/user-service';
-import { Router, NavigationExtras } from '@angular/router';
 import { ToolbarService } from '../shared/toolbar.service';
 import { LoadingService } from '../shared/loading.service';
-import { MdSnackBar, MdSnackBarConfig, AriaLivePoliteness } from '@angular/material';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { GlobalValidator } from '../shared/global.validator';
 import { ValidationMessageService } from '../shared/validation-message.service';
 
@@ -27,6 +28,8 @@ export class LoginComponent implements OnInit {
     password: '',
     confirmPassword: ''
   };
+
+  private snackBarConfig: MdSnackBarConfig;
 
   constructor(public userService: UserService, public toolbarService: ToolbarService,
               public loadingService: LoadingService, public messageService: ValidationMessageService,
@@ -60,10 +63,15 @@ export class LoginComponent implements OnInit {
     if (this.router.url.indexOf('disconnect') !== -1) {
       this.toolbarService.show(false);
       this.userService.logOut();
-    } else if (this.userService.isAuth()) {
-      this.router.navigate(['room']);
     } else {
-      this.toolbarService.show(false);
+      this.userService.isAuth()
+        .then(isAuth => {
+          if (isAuth) {
+            this.router.navigate(['room']);
+          } else {
+            this.toolbarService.show(false);
+          }
+        });
     }
   }
 
@@ -87,11 +95,18 @@ export class LoginComponent implements OnInit {
             after ${this.userService.bonusNuuBits.consecutiveLogIn} consecutive login !`, '', this.snackBarConfig);
           }
         })
-        .catch(err => {
+        .catch((err: firebase.FirebaseError) => {
           this.loadingService.show(false);
-          //TODO login err msgs
-          console.log(err);
-          this.snackBar.open('Log in Fail', '', this.snackBarConfig);
+          console.error(err);
+          let errMsg = 'Log in Fail';
+          switch (err.code) {
+            case 'auth/invalid-email':
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+              errMsg = 'Incorrect email or password';
+              break;
+          }
+          this.snackBar.open(errMsg, '', this.snackBarConfig);
         });
     } else {
       this.isOnLogin = true;
@@ -112,14 +127,30 @@ export class LoginComponent implements OnInit {
           this.toolbarService.show(true);
           this.snackBar.open('Sign Up Success', '', this.snackBarConfig);
         })
-        .catch(err => {
+        .catch((err: firebase.FirebaseError) => {
           this.loadingService.show(false);
-          this.snackBar.open('Sign Up Fail', '', this.snackBarConfig);
-          console.log(err);
+          console.error(err);
+          let errMsg = 'Sign Up Fail';
+          switch (err.code) {
+            case 'auth/email-already-in-use':
+              errMsg = err.message;
+              break;
+            case 'auth/network-request-failed':
+              errMsg = 'No internet connection';
+              break;
+          }
+          this.snackBar.open(errMsg, '', this.snackBarConfig);
         });
     }
   }
 
-  private snackBarConfig: MdSnackBarConfig;
+  resetPassword() {
+    this.userService.resetPassword(this.userModel).then(() => {
+      this.snackBar.open('Reset password email sent', '', this.snackBarConfig);
+    }, (err) => {
+      console.error(err);
+      this.snackBar.open('Could not reset your password, please contact admin', '', this.snackBarConfig);
+    });
+  }
 
 }

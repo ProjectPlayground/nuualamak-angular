@@ -4,8 +4,8 @@
 }
 
 .center-input {
-  justify-content: center;
   display: flex;
+  justify-content: center;
 }
 
 .style-avatar {
@@ -15,4 +15,8 @@
 
 .loading-size {
   width: 28px;
+}
+
+.margin20 {
+  margin: 20px;
 }

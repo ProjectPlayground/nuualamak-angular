@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageService } from 'angular-2-local-storage';
 import 'rxjs/add/operator/map';
 import * as firebase from 'firebase';
 import { UserModel } from './user.model';
 import { UserItemsService } from './user-items-service';
+import { UserReady } from './user-notifier';
 
 @Injectable()
 export class UserService {
@@ -14,26 +14,21 @@ export class UserService {
   private currentUser: UserModel;
   bonusNuuBits: {got: boolean, value: number, consecutiveLogIn: number};
 
-  constructor(public userItemsService: UserItemsService, public localStorage: LocalStorageService) {
+  constructor(public userItemsService: UserItemsService, public userReady: UserReady) {
     this.refDatabaseUsers = firebase.database().ref('users');
     this.refStorageUsers = firebase.storage().ref('users');
   }
 
-  getCurrent() {
+  getCurrent(): Promise<UserModel> {
     if (this.currentUser) {
       return Promise.resolve(this.currentUser);
     } else {
-      let userUid;
-      if (firebase.auth().currentUser) {
-        userUid = firebase.auth().currentUser.uid;
-      } else {
-        userUid = this.localStorage.get('user');
-      }
       return new Promise((resolve, reject) =>
         firebase.auth().onAuthStateChanged(resolve, reject)).then((user: firebase.User) => {
         return this.refDatabaseUsers.child(user.uid).once('value')
           .then(snapshot => {
             this.currentUser = snapshot.val();
+            this.userReady.notify(true);
             return this.currentUser;
           });
       });
@@ -44,7 +39,6 @@ export class UserService {
     return firebase.auth().signInWithEmailAndPassword(userModel.email, password)
       .then(() => {
         return this.getCurrent().then(user => {
-          this.localStorage.set('user', user.uid);
           this.bonusNuuBits = {got: false, value: 0, consecutiveLogIn: 0};
           this.getNuuBitsBonus(user);
           return Promise.all([this.updateUserInfo(user),
@@ -63,15 +57,19 @@ export class UserService {
         userModel.consecutiveLogIn = 0;
         userModel.nuuBits = 0;
         return this.refDatabaseUsers.child(userModel.uid).set(userModel)
-          .then(() => this.currentUser = userModel);
+          .then(() => {
+            this.currentUser = userModel;
+            this.userReady.notify(true);
+          });
       });
   }
 
-  isAuth() {
-    return this.currentUser ? true : new Promise((resolve, reject) =>
+  isAuth(): Promise<boolean> {
+    return this.currentUser ? Promise.resolve(true) : new Promise((resolve, reject) =>
       firebase.auth().onAuthStateChanged(resolve, reject))
       .then((user: firebase.User) => {
-        return user;
+        this.userReady.notify(true);
+        return Boolean(user);
       });
   }
 
@@ -107,6 +105,16 @@ export class UserService {
   updateUserInfo(user: UserModel) {
     return this.refDatabaseUsers.child(user.uid).update(user)
       .then(() => this.currentUser = user);
+  }
+
+  /**
+   * Send email to the user to reset his password
+   *
+   * @param user
+   * @returns {firebase.Promise<any>}
+   */
+  resetPassword(user: UserModel) {
+    return firebase.auth().sendPasswordResetEmail(user.email);
   }
 
   /**
@@ -173,34 +181,6 @@ export class UserService {
     } else {
       return this.updateUserInfo(user);
     }
-  }
-
-  /**
-   * Convert Base64 to BLOB
-   *
-   * @param b64Data
-   * @param contentType
-   * @param sliceSize
-   * @returns {Blob}
-   */
-  private b64toBlob(b64Data, contentType?, sliceSize?) {
-    contentType = contentType || '';
-    sliceSize = sliceSize || 512;
-
-    let byteCharacters = atob(b64Data);
-    let byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      let slice = byteCharacters.slice(offset, offset + sliceSize);
-
-      let byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-      byteArrays.push(new Uint8Array(byteNumbers));
-    }
-
-    return new Blob(byteArrays, {type: contentType});
   }
 
 }

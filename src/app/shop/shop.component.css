@@ -1,4 +1,8 @@
 
+:host {
+  overflow: auto;
+}
+
 .list-style {
   justify-content: center;
   display: flex;
@@ -14,6 +18,13 @@ md-list-item >>> .md-list-item {
   border-radius: 20px;
 }
 
+.btn-shop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+
 .green-color {
   color: #22bfbf;
 }
@@ -22,6 +33,10 @@ md-list-item >>> .md-list-item {
   color: #67798a;
 }
 
-.blue-color {
-  color: #003366;
+.violet-color {
+  color: #6d00fe;
+}
+
+.date-font {
+  font-size: smaller;
 }

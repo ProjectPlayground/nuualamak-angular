@@ -4,6 +4,7 @@ import { ToolbarService } from './shared/toolbar.service';
 import { LoadingService } from './shared/loading.service';
 import { UserService } from './shared/user/user-service';
 import { UserModel } from './shared/user/user.model';
+import { UserReady } from './shared/user/user-notifier';
 
 @Component({
   selector: 'app-root',
@@ -18,19 +19,17 @@ export class AppComponent implements OnInit {
   toolbarTitle = 'Nualamak';
 
   constructor(public firebaseService: FirebaseService, public userService: UserService,
-              public toolbarService: ToolbarService, public loadingService: LoadingService) {
+              public userReady: UserReady, public toolbarService: ToolbarService,
+              public loadingService: LoadingService) {
 
   }
 
   ngOnInit(): void {
-    this.toolbarService.showSource$.subscribe(show => {
-      if (show) {
-        this.userService.getCurrent()
-          .then(currentUser => this.currentUser = currentUser);
-      }
-      this.showToolbar = show;
-    });
+    this.toolbarService.showSource$.subscribe(show => this.showToolbar = show);
     this.toolbarService.titleSource$.subscribe(title => this.toolbarTitle = title);
     this.loadingService.showSource$.subscribe(show => this.isLoading = show);
+    this.userReady.notifySource$.subscribe(() =>
+      this.userService.getCurrent()
+        .then(currentUser => this.currentUser = currentUser));
   }
 }

@@ -56,6 +56,7 @@ export class ShopComponent implements OnInit {
           .then(() => this.getItems())
           .catch(err => {
             this.loadingService.show(false);
+            console.error(err);
             this.snackBar.open('Fail to add item', '', this.snackBarConfig);
           });
       }
@@ -64,7 +65,6 @@ export class ShopComponent implements OnInit {
 
   buyItem(item: ItemModel) {
     if (this.currentUser.nuuBits >= item.price) {
-
       let dialogRef = this.dialog.open(ConfirmMessageDialog, <MdDialogConfig>{disableClose: false})
       dialogRef.componentInstance.title = 'Confirmation of purchase';
       dialogRef.componentInstance.content = 'Are you sure to buy this item ?';
@@ -79,6 +79,7 @@ export class ShopComponent implements OnInit {
             })
             .catch(err => {
               this.loadingService.show(false);
+              console.error(err);
               this.snackBar.open('We\'re sorry, Fail to buy the item', '', this.snackBarConfig);
             });
         }
@@ -103,31 +104,32 @@ export class ShopComponent implements OnInit {
           })
           .catch(err => {
             this.loadingService.show(false);
+            console.error(err);
             this.snackBar.open('We\'re sorry, Fail to activate the item', '', this.snackBarConfig);
           });
       }
     });
   }
 
-  isItemBought(item: ItemModel) {
+  isItemBought(item: ItemModel): boolean {
     return this.getItemBoughtInfo(item) !== undefined;
   }
 
-  isItemActive(item: ItemModel) {
+  isItemActive(item: ItemModel): boolean {
     if (this.isItemBought(item)) {
       return this.getItemBoughtInfo(item).isActivated;
     }
     return false;
   }
 
-  isItemInactive(item: ItemModel) {
+  isItemInactive(item: ItemModel): boolean {
     if (this.isItemBought(item) && !this.isItemActive(item)) {
       return this.getItemBoughtInfo(item).activationDate !== undefined;
     }
     return false;
   }
 
-  getActivationDate(item: ItemModel) {
+  getActivationDate(item: ItemModel): string {
     let itemBought = this.getItemBoughtInfo(item);
     if (itemBought && itemBought.activationDate) {
       return itemBought.activationDate.toString();
@@ -151,6 +153,7 @@ export class ShopComponent implements OnInit {
       .catch(err => {
         this.loadingService.show(false);
         this.firstLoad = false;
+        console.error(err);
         this.snackBar.open('Fail loading items', '', this.snackBarConfig);
       });
   }

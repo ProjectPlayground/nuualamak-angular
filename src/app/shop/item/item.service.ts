@@ -10,13 +10,15 @@ export class ItemService {
 
   private refItemsList: firebase.database.Reference;
   private refItemsBought: firebase.database.Reference;
+  private refStorageBackgroundImage: firebase.storage.Reference;
 
   constructor(public userService: UserService) {
     this.refItemsList = firebase.database().ref('itemsList');
     this.refItemsBought = firebase.database().ref('itemsBought');
+    this.refStorageBackgroundImage = firebase.storage().ref('backgroundImage');
   }
 
-  getAll() {
+  getAll(): firebase.Promise<Array<ItemModel>> {
     return this.refItemsList.once('value')
       .then((data) => {
         let items = data.val();
@@ -25,9 +27,19 @@ export class ItemService {
   }
 
   add(newItem: ItemModel) {
-    let newItenId = this.refItemsList.push().key;
-    newItem.id = newItenId;
-    return this.refItemsList.child(newItenId).update(newItem);
+    let newItemId = this.refItemsList.push().key;
+    newItem.id = newItemId;
+    if (newItem.category === 'background_image' && newItem.background_image) {
+      let firebaseBackgroundImage = newItem.background_image.substring(newItem.background_image.indexOf(',') + 1);
+      return this.refStorageBackgroundImage
+        .putString(firebaseBackgroundImage, firebase.storage.StringFormat.BASE64)
+        .then((fileSnapshot: firebase.storage.UploadTaskSnapshot) => {
+          newItem.background_image = fileSnapshot.downloadURL;
+          return this.refItemsList.child(newItemId).update(newItem);
+        });
+    } else {
+      return this.refItemsList.child(newItemId).update(newItem);
+    }
   }
 
   buy(user: UserModel, item: ItemModel) {
@@ -45,7 +57,7 @@ export class ItemService {
       });
   }
 
-  getItemsBought(user: UserModel) {
+  getItemsBought(user: UserModel): firebase.Promise<Array<ItemBoughtModel>> {
     return this.refItemsBought.child(user.uid).once('value')
       .then(data => {
         let itemsBought = data.val();
@@ -53,10 +65,10 @@ export class ItemService {
       });
   }
 
-  getActiveItemsBought(user: UserModel): any {
+  getActiveItemsBought(user: UserModel): firebase.Promise<Array<ItemModel>> {
     return this.refItemsBought.child(user.uid).once('value')
-      .then(dataItemsBought => {
-        let itemsBought = dataItemsBought.val();
+      .then(data => {
+        let itemsBought = data.val();
         let itemsBoughtActivated = itemsBought ? Object.keys(itemsBought)
           .map(itemBoughtId => itemsBought[itemBoughtId])
           .filter(itemBought => itemBought.isActivated) : [];
@@ -86,7 +98,7 @@ export class ItemService {
       .update(updates);
   }
 
-  private getItemCategory(itemToActivate: ItemBoughtModel, items: Array<ItemModel>) {
+  private getItemCategory(itemToActivate: ItemBoughtModel, items: Array<ItemModel>): string {
     return items.filter(item => itemToActivate.itemId === item.id)[0].category;
   }
 
