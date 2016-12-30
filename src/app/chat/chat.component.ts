@@ -10,6 +10,7 @@ import { UserService } from '../shared/user/user-service';
 import { ChatService } from './chat.service';
 import { ItemModel } from '../shop/item/item.model';
 import { ItemService } from '../shop/item/item.service';
+import { ChatTheme } from './chat-theme';
 
 @Component({
   selector: 'app-chat',
@@ -26,10 +27,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   messageList: Array<ChatMessage>;
   itemsBought: Array<ItemModel>;
 
-  fontName = 'inherit';
-  fontColor = 'black';
-  backgroundImage = '';
-  isBold = false;
+  chatTheme: ChatTheme;
+
   isPaused = false;
   firstLoad = true;
 
@@ -38,6 +37,7 @@ export class ChatComponent implements OnInit, OnDestroy {
               public chatService: ChatService, private itemService: ItemService,
               public snackBar: MdSnackBar, private sanitizer: DomSanitizer) {
 
+    this.chatTheme = new ChatTheme();
     this.itemsBought = new Array<ItemModel>();
     this.typedMsg = '';
     this.snackBarConfig = new MdSnackBarConfig();
@@ -109,19 +109,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     itemsBought.map((itemBought: ItemModel) => {
       switch (itemBought.category) {
         case 'theme':
-          this.backgroundImage = itemBought.background_image;
+          this.chatTheme.backgroundImage = itemBought.backgroundImage;
+          this.chatTheme.takeAllPlace = itemBought.takeAllPlace;
           break;
         case 'font':
-          this.fontName = itemBought.font_name;
+          this.chatTheme.fontName = itemBought.fontName;
           break;
-        case 'font_color':
-          this.fontColor = itemBought.font_color;
+        case 'fontColor':
+          this.chatTheme.fontColor = itemBought.fontColor;
           break;
         case 'emoticon':
           //TODO change emojis list
           break;
         case 'bold':
-          this.isBold = true;
+          this.chatTheme.isBold = true;
           break;
 
       }

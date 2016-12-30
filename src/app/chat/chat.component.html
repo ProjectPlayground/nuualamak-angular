@@ -1,5 +1,7 @@
+
 <div class="center-background">
-  <img class="chat-background" *ngIf="backgroundImage" [src]="backgroundImage">
+  <img class="chat-background" *ngIf="chatTheme.backgroundImage" [src]="chatTheme.backgroundImage"
+  [ngClass]="{'chat-background-take-all-place': chatTheme.takeAllPlace}">
 </div>
 
 <md-list class="list-style" angular2-auto-scroll>
@@ -7,8 +9,8 @@
     Send a message, and it would be the first one in this room.
   </md-list-item>
   <md-list-item class="chat-msg" *ngFor="let msg of messageList"
-                [ngClass]="{userMsg: !backgroundImage && msg.user.uid===user?.uid,
-                othersMsg: !backgroundImage && msg.user.uid!==user?.uid}">
+                [ngClass]="{userMsg: !chatTheme.backgroundImage && msg.user.uid===user?.uid,
+                othersMsg: !chatTheme.backgroundImage && msg.user.uid!==user?.uid}">
       <span class="chat-header">
         <div>{{msg.user.username}}:</div>
         <div *ngIf="getFarCodeTimestamp(msg) === 0">last {{getTimePassed(msg) | date:'mm'}} minutes</div>
@@ -16,8 +18,8 @@
         <div *ngIf="getFarCodeTimestamp(msg) === 2">{{msg.timestamp | date}}</div>
       </span>
     <div class="chat-content"
-         [ngClass]="{'bold': isBold}"
-         [ngStyle]="{'color': fontColor, 'font-family': fontName}"
+         [ngClass]="{'bold': chatTheme.isBold}"
+         [ngStyle]="{'color': chatTheme.fontColor, 'font-family': chatTheme.fontName}"
          #chatContent>{{msg.content}}
     </div>
   </md-list-item>

@@ -106,7 +106,7 @@ export class ProfileComponent implements OnInit {
 
   save() {
     this.user.email = this.profileForm.value.email;
-    this.user.username = this.user.username;
+    this.user.username = this.profileForm.value.username;
     this.user.gender = this.userGender;
     this.user.age = this.profileForm.value.age;
     this.user.country = this.profileForm.value.country;

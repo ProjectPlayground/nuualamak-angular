@@ -53,6 +53,21 @@ export class ValidationMessageService {
     },
     'hobbies': {
       'maxlength': this.maxLength('Hobbies', this.maxLengthHobbies)
+    },
+    'itemName': {
+      'required': this.required('Item Name')
+    },
+    'itemFontName': {
+      'required': this.required('Font Name')
+    },
+    'itemFontColor': {
+      'required': this.required('Font Name')
+    },
+    'itemDaysToExpire': {
+      'pattern': this.required('Number of days to expire')
+    },
+    'itemPrice': {
+      'pattern': this.required('Item Price')
     }
   };
 

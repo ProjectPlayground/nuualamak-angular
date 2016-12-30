@@ -29,12 +29,12 @@ export class ItemService {
   add(newItem: ItemModel) {
     let newItemId = this.refItemsList.push().key;
     newItem.id = newItemId;
-    if (newItem.category === 'background_image' && newItem.background_image) {
-      let firebaseBackgroundImage = newItem.background_image.substring(newItem.background_image.indexOf(',') + 1);
+    if (newItem.category === 'backgroundImage' && newItem.backgroundImage) {
+      let firebaseBackgroundImage = newItem.backgroundImage.substring(newItem.backgroundImage.indexOf(',') + 1);
       return this.refStorageBackgroundImage
         .putString(firebaseBackgroundImage, firebase.storage.StringFormat.BASE64)
         .then((fileSnapshot: firebase.storage.UploadTaskSnapshot) => {
-          newItem.background_image = fileSnapshot.downloadURL;
+          newItem.backgroundImage = fileSnapshot.downloadURL;
           return this.refItemsList.child(newItemId).update(newItem);
         });
     } else {
