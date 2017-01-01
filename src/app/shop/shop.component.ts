@@ -22,7 +22,8 @@ export class ShopComponent implements OnInit {
 
   firstLoad = true;
   currentUser: UserModel;
-  items: Array<ItemModel>;
+  private itemsList: Array<ItemModel>;
+  allItems: Array<{category: string, items: Array<ItemModel>}>;
   itemsBought: Array<ItemBoughtModel>;
 
   constructor(public userService: UserService, public itemService: ItemService,
@@ -36,6 +37,7 @@ export class ShopComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.allItems = new Array();
     this.toolbarService.title('Shop');
     this.firstLoad = true;
     this.loadingService.show(true);
@@ -96,7 +98,7 @@ export class ShopComponent implements OnInit {
     dialogRef.afterClosed().subscribe((isOk: boolean) => {
       if (isOk) {
         this.loadingService.show(true);
-        this.itemService.activate(this.getItemBoughtInfo(item), this.itemsBought, this.items)
+        this.itemService.activate(this.getItemBoughtInfo(item), this.itemsBought, this.itemsList)
           .then(() => {
             this.getItemsBought();
             this.loadingService.show(false);
@@ -144,9 +146,17 @@ export class ShopComponent implements OnInit {
   }
 
   private getItems() {
+    this.allItems = new Array();
     this.itemService.getAll()
       .then(items => {
-        this.items = items;
+        this.itemsList = items;
+        for (let item of items) {
+          let itemsByCategory: {category: string, items: Array<ItemModel>} = this.getItemsByCategory(item.category);
+          if (itemsByCategory.items.length === 0) {
+            this.allItems.push(itemsByCategory);
+          }
+          itemsByCategory.items.push(item);
+        }
         this.loadingService.show(false);
         this.firstLoad = false;
       })
@@ -156,6 +166,15 @@ export class ShopComponent implements OnInit {
         console.error(err);
         this.snackBar.open('Fail loading items', '', this.snackBarConfig);
       });
+  }
+
+  private getItemsByCategory(category: string) {
+    for (let itemsCategory of this.allItems) {
+      if (itemsCategory.category === category) {
+        return itemsCategory;
+      }
+    }
+    return {category: category, items: []};
   }
 
   private getItemBoughtInfo(item: ItemModel): ItemBoughtModel {

@@ -29,9 +29,9 @@ export class ItemService {
   add(newItem: ItemModel) {
     let newItemId = this.refItemsList.push().key;
     newItem.id = newItemId;
-    if (newItem.category === 'backgroundImage' && newItem.backgroundImage) {
+    if (newItem.category === 'theme' && newItem.backgroundImage) {
       let firebaseBackgroundImage = newItem.backgroundImage.substring(newItem.backgroundImage.indexOf(',') + 1);
-      return this.refStorageBackgroundImage
+      return this.refStorageBackgroundImage.child(newItem.id)
         .putString(firebaseBackgroundImage, firebase.storage.StringFormat.BASE64)
         .then((fileSnapshot: firebase.storage.UploadTaskSnapshot) => {
           newItem.backgroundImage = fileSnapshot.downloadURL;

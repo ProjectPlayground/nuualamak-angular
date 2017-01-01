@@ -13,6 +13,7 @@ export class ChatTheme {
     this.backgroundImage = '';
     this.isBold = false;
     this.takeAllPlace = false;
+    this.backgroundImage = 'assets/default_background.png';
   }
 
 }

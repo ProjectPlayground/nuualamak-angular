@@ -26,7 +26,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   user: UserModel;
   messageList: Array<ChatMessage>;
   itemsBought: Array<ItemModel>;
-
   chatTheme: ChatTheme;
 
   isPaused = false;
@@ -124,7 +123,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         case 'bold':
           this.chatTheme.isBold = true;
           break;
-
       }
     });
   }

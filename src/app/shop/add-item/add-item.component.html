@@ -1,52 +1,97 @@
 <h2>Add a new item to the shop</h2>
 
-<md-list>
-  <md-list-item>
-    <md-input type="text" placeholder="Item Name" [(ngModel)]="itemToAdd.name"></md-input>
-  </md-list-item>
+<form [formGroup]="addItemForm">
+  <md-list>
+    <md-list-item>
+      <md-input type="text"
+                placeholder="Item Name"
+                formControlName="itemName"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.itemName">
+      {{ formErrors.itemName }}
+    </md-list-item>
 
-  <md-list-item class="center-input">
-    <label for="category" class="margin-right">Item Category</label>
-    <md-select id="category" [ngModelOptions]="{standalone: true}"
-               [(ngModel)]="itemToAdd.category">
-      <md-option value="theme">Theme</md-option>
-      <md-option value="font">Font</md-option>
-      <md-option value="font_color">Font Color</md-option>
-      <md-option value="emoticon">Emoticon</md-option>
-    </md-select>
-  </md-list-item>
+    <md-list-item class="center-input">
+      <md-select color="primary" placeholder="Item Category" formControlName="itemCategory">
+        <!--[ngModelOptions]="{standalone: true}"-->
+        <!--[(ngModel)]="itemToAddCategory">-->
+        <md-option value="theme">Theme</md-option>
+        <md-option value="font">Font</md-option>
+        <md-option value="fontColor">Font Color</md-option>
+        <!--TODO add add emoji list-->
+        <!--<md-option value="emoticon">Emoticon</md-option>-->
+      </md-select>
+    </md-list-item>
 
-  <md-list-item *ngIf="itemToAdd.category === 'theme'" (click)="inputBackground.click()">
-    <label>Tap to pick a Background Image</label>
-    <img class="background-preview-size" *ngIf="backgroundImage" [src]="backgroundImage">
-    <input type="file" class="hide-element" #inputBackground (change)="pickBackgroundImage($event)">
-  </md-list-item>
-  <md-list-item *ngIf="itemToAdd.category === 'font'">
-    <md-input type="text" formControlName="itemCategoryData" placeholder="Font name"
-               [(ngModel)]="itemToAdd.font_name"></md-input>
-  </md-list-item>
-  <md-list-item *ngIf="itemToAdd.category === 'font_color'">
-    <md-input type="text" formControlName="itemCategoryData" placeholder="Font color"
-               [(ngModel)]="itemToAdd.font_color"></md-input>
-  </md-list-item>
-  <md-list-item *ngIf="itemToAdd.category === 'emoticon'">
-    <md-input type="text" formControlName="itemCategoryData" placeholder="Emoticon"
-               [(ngModel)]="itemToAdd.emoticon"></md-input>
-  </md-list-item>
+    <md-list-item *ngIf="addItemForm.value.itemCategory === 'theme'" (click)="inputBackground.click()">
+      <md-progress-circle mode="indeterminate" color="primary" class="loading-background"
+                          *ngIf="isBackgroundLoading"></md-progress-circle>
+      <label [ngClass]="{'lbl-indent': isBackgroundLoading}">
+        Tap to pick a Background Image<span class="mandatory">*</span>
+      </label>
+      <img class="override-background-preview" *ngIf="backgroundImage" [src]="backgroundImage">
+      <input type="file" class="hide-element"
+             #inputBackground (change)="pickBackgroundImage($event)">
+    </md-list-item>
+    <md-list-item *ngIf="addItemForm.value.itemCategory === 'theme'">
+      <md-slide-toggle formControlName="takeAllPlace">
+        Should take all place ?
+      </md-slide-toggle>
+    </md-list-item>
 
-  <md-list-item>
-    <md-input type="number" placeholder="Number of days the item is available"
-              [(ngModel)]="itemToAdd.daysToExpire"></md-input>
-  </md-list-item>
+    <md-list-item *ngIf="addItemForm.value.itemCategory === 'font'">
+      <md-input type="text"
+                formControlName="itemFontName"
+                placeholder="Font name"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger"
+                  *ngIf="addItemForm.value.itemCategory === 'font' && formErrors.itemFontName">
+      {{ formErrors.itemFontName }}
+    </md-list-item>
 
-  <md-list-item>
-    <md-input type="number" placeholder="Item Price" [(ngModel)]="itemToAdd.price"></md-input>
-  </md-list-item>
-</md-list>
+    <md-list-item *ngIf="addItemForm.value.itemCategory === 'fontColor'">
+      <md-input type="text"
+                formControlName="itemFontColor"
+                placeholder="Font color"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger"
+                  *ngIf="addItemForm.value.itemCategory === 'fontColor' && formErrors.itemFontColor">
+      {{ formErrors.itemFontColor }}
+    </md-list-item>
+
+    <!--TODO add add emoji list-->
+    <!--<md-list-item *ngIf="addItemForm.value.itemCategory === 'emoticon'">-->
+    <!--<md-input type="text"-->
+    <!--formControlName="emoticon"-->
+    <!--placeholder="Emoticon"-->
+    <!--[(ngModel)]="itemToAdd.emoticon"></md-input>-->
+    <!--</md-list-item>-->
+
+    <md-list-item>
+      <md-input type="number"
+                formControlName="itemDaysToExpire"
+                placeholder="Number of days the item is available"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.itemDaysToExpire">
+      {{ formErrors.itemDaysToExpire }}
+    </md-list-item>
+
+    <md-list-item>
+      <md-input type="number"
+                formControlName="itemPrice"
+                placeholder="Item Price"></md-input>
+    </md-list-item>
+    <md-list-item class="center-input alert alert-danger" *ngIf="formErrors.itemPrice">
+      {{ formErrors.itemPrice }}
+    </md-list-item>
+  </md-list>
+</form>
 
 
 <md-list-item no-lines class="btns-dialog">
   <button md-button color="primary" (click)="cancel()">Cancel</button>
-  <button md-button color="primary" (click)="add()">Add Item</button>
+  <button md-button color="primary" [disabled]="!areInputsValid()"
+          (click)="areInputsValid() && add()">Add Item
+  </button>
 </md-list-item>
 

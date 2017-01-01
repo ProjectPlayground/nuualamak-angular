@@ -68,7 +68,8 @@ export class ValidationMessageService {
     },
     'itemPrice': {
       'pattern': this.required('Item Price')
-    }
+    },
+    'itemCategory': {}
   };
 
   onValueChanged(currentForm: FormGroup, formErrors: any) {

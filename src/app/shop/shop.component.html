@@ -1,33 +1,39 @@
 <p class="center-text">Here you can buy items for more customization.</p>
 
-<p class="center-text" *ngIf="!firstLoad && items?.length === 0">
+<p class="center-text" *ngIf="!firstLoad && allItems?.length === 0">
   No item available, please contact admin for more info.
 </p>
 
 <md-list>
-  <md-list-item class="list-style" *ngFor="let item of items">
-    <h3 md-line>{{item.name}}</h3>
-    <p md-line>{{item.price}}</p>
+  <div *ngFor="let itemsCategory of allItems">
+    <h3 class="list-style">{{itemsCategory.category}}</h3>
 
-    <div class="btn-shop">
-      <button md-icon-button *ngIf="!isItemBought(item)" (click)="buyItem(item)">
-        <md-icon><i class="material-icons violet-color">add_shopping_cart</i></md-icon>
-      </button>
+    <md-list-item class="list-style" *ngFor="let item of itemsCategory.items">
+      <h3 md-line>{{item.name}}</h3>
+      <p md-line>cost: {{item.price}}</p>
 
-      <button md-icon-button *ngIf="isItemBought(item) && !isItemActive(item)" (click)="activateItem(item)">
-        <md-icon><i class="material-icons grey_color">gavel</i></md-icon>
-      </button>
+      <div class="btn-shop">
+        <button md-icon-button *ngIf="!isItemBought(item)" (click)="buyItem(item)">
+          <md-icon><i class="material-icons violet-color">add_shopping_cart</i></md-icon>
+        </button>
 
-      <div *ngIf="isItemActive(item) && !isItemInactive(item)">
-        <md-icon><i class="material-icons green-color">offline_pin</i></md-icon>
+        <button md-icon-button *ngIf="isItemBought(item) && !isItemActive(item)" (click)="activateItem(item)">
+          <md-icon><i class="material-icons grey_color">gavel</i></md-icon>
+        </button>
+
+        <div *ngIf="isItemActive(item) && !isItemInactive(item)">
+          <md-icon><i class="material-icons green-color">offline_pin</i></md-icon>
+        </div>
+
+        <div class="date-font">
+          {{getActivationDate(item) | date}}
+        </div>
       </div>
+    </md-list-item>
 
-      <div class="date-font">
-        {{getActivationDate(item) | date}}
-      </div>
-    </div>
+    <md-divider class="stretch-divider"></md-divider>
+  </div>
 
-  </md-list-item>
 </md-list>
 
 <div class="corner-bottom-right">

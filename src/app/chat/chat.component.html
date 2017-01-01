@@ -8,9 +8,9 @@
   <md-list-item *ngIf="!firstLoad && messageList?.length === 0">
     Send a message, and it would be the first one in this room.
   </md-list-item>
-  <md-list-item class="chat-msg" *ngFor="let msg of messageList"
-                [ngClass]="{userMsg: !chatTheme.backgroundImage && msg.user.uid===user?.uid,
-                othersMsg: !chatTheme.backgroundImage && msg.user.uid!==user?.uid}">
+  <md-list-item class="chat-msg" *ngFor="let msg of messageList">
+                <!--[ngClass]="{userMsg: !chatTheme.backgroundImage && msg.user.uid===user?.uid,-->
+                <!--othersMsg: !chatTheme.backgroundImage && msg.user.uid!==user?.uid}">-->
       <span class="chat-header">
         <div>{{msg.user.username}}:</div>
         <div *ngIf="getFarCodeTimestamp(msg) === 0">last {{getTimePassed(msg) | date:'mm'}} minutes</div>

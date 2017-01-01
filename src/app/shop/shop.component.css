@@ -40,3 +40,9 @@ md-list-item >>> .md-list-item {
 .date-font {
   font-size: smaller;
 }
+
+.stretch-divider {
+  position: relative;
+  left: 37%;
+  width: 26%;
+}
